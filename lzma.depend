@@ -1,0 +1,210 @@
+# depslib dependency file v1.0
+1349351991 source:c:\programmieren\lzma\main.cpp
+	<iostream>
+	<fstream>
+	<time.h>
+	<stdlib.h>
+	<assert.h>
+	<string.h>
+	"LzmaLib.h"
+	"LzmaDec.h"
+	"LzmaEnc.h"
+	"mysha384.h"
+
+1300283812 c:\programmieren\lzma\lzmadec.h
+	"Types.h"
+
+1302693223 c:\programmieren\lzma\types.h
+	<stddef.h>
+	<windows.h>
+
+1300283843 source:c:\programmieren\lzma\lzmadec.c
+	"LzmaDec.h"
+	<string.h>
+
+1302693344 source:c:\programmieren\lzma\lzfindmt.c
+	"LzHash.h"
+	"LzFindMt.h"
+
+1233992674 c:\programmieren\lzma\lzhash.h
+
+1233992674 c:\programmieren\lzma\lzfindmt.h
+	"LzFind.h"
+	"Threads.h"
+
+1240402939 c:\programmieren\lzma\lzfind.h
+	"Types.h"
+
+1302693145 c:\programmieren\lzma\threads.h
+	"Types.h"
+
+1271391628 source:c:\programmieren\lzma\lzmaenc.c
+	<string.h>
+	<stdio.h>
+	"LzmaEnc.h"
+	"LzFind.h"
+	"LzFindMt.h"
+
+1233992674 c:\programmieren\lzma\lzmaenc.h
+	"Types.h"
+
+1240402939 source:c:\programmieren\lzma\lzfind.c
+	<string.h>
+	"LzFind.h"
+	"LzHash.h"
+
+1300283837 source:c:\programmieren\lzma\lzmalib.c
+	"LzmaDec.h"
+	"Alloc.h"
+	"LzmaLib.h"
+
+1300283785 c:\programmieren\lzma\alloc.h
+	<stddef.h>
+
+1300283818 c:\programmieren\lzma\lzmalib.h
+	"Types.h"
+
+1253442550 source:c:\programmieren\lzma\threads.c
+	<process.h>
+	"Threads.h"
+
+1300283848 source:c:\programmieren\lzma\alloc.c
+	<windows.h>
+	<stdlib.h>
+	"Alloc.h"
+	<stdio.h>
+
+1339506775 c:\programmieren\libtomcrypt\src\headers\tomcrypt.h
+	<assert.h>
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+	<time.h>
+	<ctype.h>
+	<limits.h>
+	<tomcrypt_custom.h>
+	<tomcrypt_cfg.h>
+	<tomcrypt_macros.h>
+	<tomcrypt_cipher.h>
+	<tomcrypt_hash.h>
+	<tomcrypt_mac.h>
+	<tomcrypt_prng.h>
+	<tomcrypt_pk.h>
+	<tomcrypt_math.h>
+	<tomcrypt_misc.h>
+	<tomcrypt_argchk.h>
+	<tomcrypt_pkcs.h>
+
+1339506777 c:\programmieren\libtomcrypt\src\headers\tomcrypt_custom.h
+	<pthread.h>
+
+1339506776 c:\programmieren\libtomcrypt\src\headers\tomcrypt_cfg.h
+
+1339506779 c:\programmieren\libtomcrypt\src\headers\tomcrypt_macros.h
+	<stdlib.h>
+
+1339506777 c:\programmieren\libtomcrypt\src\headers\tomcrypt_cipher.h
+
+1339506778 c:\programmieren\libtomcrypt\src\headers\tomcrypt_hash.h
+
+1339506778 c:\programmieren\libtomcrypt\src\headers\tomcrypt_mac.h
+
+1339506781 c:\programmieren\libtomcrypt\src\headers\tomcrypt_prng.h
+
+1339506780 c:\programmieren\libtomcrypt\src\headers\tomcrypt_pk.h
+	<wchar.h>
+
+1339506779 c:\programmieren\libtomcrypt\src\headers\tomcrypt_math.h
+
+1339506780 c:\programmieren\libtomcrypt\src\headers\tomcrypt_misc.h
+
+1339506776 c:\programmieren\libtomcrypt\src\headers\tomcrypt_argchk.h
+	<signal.h>
+
+1339506781 c:\programmieren\libtomcrypt\src\headers\tomcrypt_pkcs.h
+
+1339506775 source:c:\programmieren\libtomcrypt\src\hashes\sha2\sha512.c
+	"tomcrypt.h"
+	"sha384.c"
+
+1339506774 c:\programmieren\libtomcrypt\src\hashes\sha2\sha384.c
+
+1349352485 c:\programmieren\lzma\mysha384.h
+
+1389163814 source:z:\svfua\sw\tools\lzma\alloc.c
+	<windows.h>
+	<stdlib.h>
+	"Alloc.h"
+	<stdio.h>
+
+1389163815 z:\svfua\sw\tools\lzma\alloc.h
+	<stddef.h>
+
+1389163815 source:z:\svfua\sw\tools\lzma\lzfind.c
+	<string.h>
+	"LzFind.h"
+	"LzHash.h"
+
+1389163815 z:\svfua\sw\tools\lzma\lzfind.h
+	"Types.h"
+
+1389163821 z:\svfua\sw\tools\lzma\types.h
+	<stddef.h>
+	<windows.h>
+
+1389163817 z:\svfua\sw\tools\lzma\lzhash.h
+
+1389163816 source:z:\svfua\sw\tools\lzma\lzfindmt.c
+	"LzHash.h"
+	"LzFindMt.h"
+
+1389163816 z:\svfua\sw\tools\lzma\lzfindmt.h
+	"LzFind.h"
+	"Threads.h"
+
+1389163821 z:\svfua\sw\tools\lzma\threads.h
+	"Types.h"
+
+1389163818 source:z:\svfua\sw\tools\lzma\lzmadec.c
+	"LzmaDec.h"
+	<string.h>
+
+1389163819 z:\svfua\sw\tools\lzma\lzmadec.h
+	"Types.h"
+
+1389163819 source:z:\svfua\sw\tools\lzma\lzmaenc.c
+	<string.h>
+	<stdio.h>
+	"LzmaEnc.h"
+	"LzFind.h"
+	"LzFindMt.h"
+
+1389163819 z:\svfua\sw\tools\lzma\lzmaenc.h
+	"Types.h"
+
+1389163820 source:z:\svfua\sw\tools\lzma\lzmalib.c
+	"LzmaDec.h"
+	"Alloc.h"
+	"LzmaLib.h"
+
+1389163820 z:\svfua\sw\tools\lzma\lzmalib.h
+	"Types.h"
+
+1349353213 source:z:\svfua\sw\tools\lzma\main.cpp
+	<iostream>
+	<fstream>
+	<time.h>
+	<stdlib.h>
+	<assert.h>
+	<string.h>
+	"LzmaLib.h"
+	"LzmaDec.h"
+	"LzmaEnc.h"
+	"mysha384.h"
+
+1349352485 z:\svfua\sw\tools\lzma\mysha384.h
+
+1389163821 source:z:\svfua\sw\tools\lzma\threads.c
+	<process.h>
+	"Threads.h"
+
