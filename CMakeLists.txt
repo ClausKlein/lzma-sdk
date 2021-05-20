@@ -57,8 +57,6 @@ add_executable(lzma main.cpp
   Alloc.h
   LzFind.c
   LzFind.h
-  # LzFindMt.c
-  # LzFindMt.h
   LzHash.h
   LzmaDec.c
   LzmaDec.h
@@ -66,14 +64,22 @@ add_executable(lzma main.cpp
   LzmaEnc.h
   LzmaLib.c
   LzmaLib.h
-  # Threads.c
-  # Threads.h
   Types.h
 )
 
-option(USE_7ZIP_ST "use 7Z standart lzma" ON)
+if(NOT MSVC)
+  option(USE_7ZIP_ST "use 7Z standart lzma" ON)
+endif()
+
 if(USE_7ZIP_ST)
   target_compile_definitions(lzma PUBLIC _7ZIP_ST)
+else()
+  target_sources(lzma PRIVATE
+    LzFindMt.c
+    LzFindMt.h
+    Threads.c
+    Threads.h
+  )
 endif()
 
 # install the bin

@@ -19,7 +19,7 @@ void MtSync_Construct(CMtSync *p)
 }
 
 void MtSync_GetNextBlock(CMtSync *p)
-{
+{ // warning C26115: Failing to release lock 'p->cs' in function 'MtSync_GetNextBlock'.
   if (p->needStart)
   {
     p->numProcessedBlocks = 1;
@@ -378,7 +378,7 @@ void BtGetMatches(CMatchFinderMt *p, UInt32 *distances)
 }
 
 void BtFillBlock(CMatchFinderMt *p, UInt32 globalBlockIndex)
-{
+{ // C26115: Failing to release lock 'sync->cs' in function 'BtFillBlock'.
   CMtSync *sync = &p->hashSync;
   if (!sync->needStart)
   {

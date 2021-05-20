@@ -174,11 +174,11 @@ int main(int argc, char* argv[])
         return -1;
     }
     a.seekg(0, ios::end);
-    long flen = a.tellg();
+    streampos flen = a.tellg();
     assert(flen != -1); // NOLINT
 
-    SizeT buf_len = flen;
-    inbuf = new unsigned char[flen];
+    SizeT buf_len = static_cast<SizeT>(flen);
+    inbuf = new unsigned char[buf_len];
     a.seekg(0, ios::beg);
     a.read((char*)inbuf, flen);
     if (a.bad()) {
@@ -194,7 +194,7 @@ int main(int argc, char* argv[])
 
     if (!strcmp(opt, optCompress)) {
         // printf("Compressing...\r\n");
-        outbuf = new unsigned char[flen];
+        outbuf = new unsigned char[buf_len];
         oflen = Compress2(outbuf, inbuf, buf_len);
     } else if (!strcmp(opt, optDeflate)) {
         oflen = buf_len * 10;
