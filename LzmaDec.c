@@ -1,8 +1,6 @@
 /* LzmaDec.c -- LZMA Decoder
 2009-09-20 : Igor Pavlov : Public domain */
 
-#undef _WIN32
-
 #include "LzmaDec.h"
 
 #include <string.h>

@@ -4,8 +4,6 @@
 #ifndef __7Z_TYPES_H
 #define __7Z_TYPES_H
 
-//#undef _WIN32
-
 #include <stddef.h>
 
 #ifdef _WIN32
@@ -254,4 +252,3 @@ typedef struct
 EXTERN_C_END
 
 #endif
-

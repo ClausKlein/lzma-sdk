@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.11...3.20)
 
+option(CMAKE_EXPORT_COMPILE_COMMANDS "for clang-tidy" ON)
+
 # use ccache if found
 find_program(CCACHE_EXECUTABLE "ccache" HINTS /usr/local/bin /opt/local/bin)
 if(CCACHE_EXECUTABLE AND NOT CMAKE_TOOLCHAIN_FILE)
@@ -50,27 +52,29 @@ endif()
 #
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 
-add_executable(
-  lzma
-  main.cpp
+add_executable(lzma main.cpp
   Alloc.c
-  LzFind.c
-  LzFindMt.c
-  LzmaDec.c
-  LzmaEnc.c
-  LzmaLib.c
-  # sha384.c
-  Threads.c
   Alloc.h
+  LzFind.c
   LzFind.h
-  LzFindMt.h
+  # LzFindMt.c
+  # LzFindMt.h
   LzHash.h
+  LzmaDec.c
   LzmaDec.h
+  LzmaEnc.c
   LzmaEnc.h
+  LzmaLib.c
   LzmaLib.h
-  # mysha384.h
-  Threads.h
-  Types.h)
+  # Threads.c
+  # Threads.h
+  Types.h
+)
+
+option(USE_7ZIP_ST "use 7Z standart lzma" ON)
+if(USE_7ZIP_ST)
+  target_compile_definitions(lzma PUBLIC _7ZIP_ST)
+endif()
 
 # install the bin
 install(TARGETS lzma DESTINATION bin)

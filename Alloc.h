@@ -4,8 +4,6 @@
 #ifndef __COMMON_ALLOC_H
 #define __COMMON_ALLOC_H
 
-#undef _WIN32
-
 #include <stddef.h>
 
 #ifdef __cplusplus
