@@ -137,7 +137,7 @@ static SRes Encode(ISeqOutStream *outStream, ISeqInStream *inStream, UInt64 file
   SRes res;
   CLzmaEncProps props;
 
-  (void) rs;
+  (void) rs; // NOTE: prevent unused waring! CK
 
   enc = LzmaEnc_Create(&g_Alloc);
   if (enc == 0)

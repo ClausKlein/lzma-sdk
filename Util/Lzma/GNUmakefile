@@ -1,8 +1,7 @@
-PROG = lzma
+PROG = ../../lzma
 CXX = g++
-LIB =
 RM = rm -f
-CFLAGS = -c -O2 -Wall -Wextra -D_7ZIP_ST -std=c++98 -x c++
+CFLAGS = -c -O2 -Wall -Wextra -Wpedantic -D_7ZIP_ST -std=c++14 -x c++
 
 OBJS = \
   LzmaUtil.o \
@@ -17,7 +16,7 @@ OBJS = \
 all: $(PROG)
 
 $(PROG): $(OBJS)
-	$(CXX) -o $(PROG) $(LDFLAGS) $(OBJS) $(LIB) $(LIB2)
+	$(CXX) -o $(PROG) $(LDFLAGS) $(OBJS)
 
 LzmaUtil.o: LzmaUtil.c
 	$(CXX) $(CFLAGS) $(CURDIR)/LzmaUtil.c

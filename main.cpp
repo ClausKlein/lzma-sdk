@@ -8,7 +8,6 @@
 #include <fstream>
 #include <iostream>
 #include <string.h>
-#include <time.h>
 
 #ifdef USE_LIBTOMCRYPT
 extern "C"
@@ -17,27 +16,36 @@ extern "C"
 }
 #endif
 
-#undef min
-#undef max
+#ifdef _WIN32
+#    undef min
+#    undef max
+#endif
 
 using namespace std;
 
-static void* AllocForLzma(void* p, size_t size) { return malloc(size); }
-static void FreeForLzma(void* p, void* address) { free(address); }
+static void* AllocForLzma(void* p, size_t size)
+{
+    return malloc(size); // NOLINT(cppcoreguidelines-no-malloc)
+}
+static void FreeForLzma(void* p, void* address)
+{
+    free(address); // NOLINT(cppcoreguidelines-no-malloc)
+}
 static ISzAlloc SzAllocForLzma = {&AllocForLzma, &FreeForLzma};
 
-const char* optDeflate = "d";
-const char* optCompress = "c";
-
+//
+// FIXME: this does not work! CK
+//
+#undef USE_UNUSED_FUNCTION
 #ifdef USE_UNUSED_FUNCTION
 static SRes res;
-static SizeT outPos = 0, inPos = 0 /*LZMA_PROPS_SIZE*/;
-const SizeT IN_BUF_SIZE = 0x600000;
-const SizeT OUT_BUF_SIZE = 0x600000;
+static SizeT outPos = 0, inPos = 0 /* TODO: Why not inPos = LZMA_PROPS_SIZE; ? CK */;
 
-static int UncompressInc(unsigned char* outBuf, SizeT outBufsize, unsigned char* inBuf,
-                         SizeT inBufsize)
+static SizeT UncompressInc(unsigned char* outBuf, SizeT outBufsize, unsigned char* inBuf,
+                           SizeT inBufsize)
 {
+    const SizeT OUT_BUF_SIZE = 0x600000;
+
     ELzmaStatus status;
     unsigned char* pinBuf = inBuf;
     static CLzmaDec dec;
@@ -60,10 +68,10 @@ static int UncompressInc(unsigned char* outBuf, SizeT outBufsize, unsigned char*
         // pinBuf += LZMA_PROPS_SIZE
     }
 
-#    undef BIGLOOP
 #    define BIGLOOP
 #    ifdef BIGLOOP
     while (outPos < outBufsize) {
+    const SizeT IN_BUF_SIZE = 0x600000;
 #    endif
 
         SizeT srcLen;
@@ -134,7 +142,13 @@ SRes OnProgress(void* p, UInt64 inSize, UInt64 outSize)
 }
 static ICompressProgress g_ProgressCallback = {&OnProgress};
 
-int Compress2(unsigned char* outBuf, const unsigned char* inBuf, SizeT inBufsize)
+//
+// XXX
+// Attention: this is incompatible to Lzma! CK
+// see Util/Lzma/LzmaUtil.c #134 Encode()
+// XXX
+//
+SizeT Compress2(unsigned char* outBuf, const unsigned char* inBuf, SizeT inBufsize)
 {
     SizeT propsSize = LZMA_PROPS_SIZE;
     SizeT destLen = inBufsize + inBufsize / 3 + 128;
@@ -145,9 +159,9 @@ int Compress2(unsigned char* outBuf, const unsigned char* inBuf, SizeT inBufsize
     props.dictSize = 1 << 16; // 64 KB
     props.writeEndMark = 1;   // 0 or 1
 
-    int res = LzmaEncode(&outBuf[LZMA_PROPS_SIZE], &destLen, &inBuf[0], inBufsize, &props, &outBuf[0],
-                         &propsSize, props.writeEndMark, &g_ProgressCallback, &SzAllocForLzma,
-                         &SzAllocForLzma);
+    int res =
+        LzmaEncode(&outBuf[LZMA_PROPS_SIZE], &destLen, inBuf, inBufsize, &props, outBuf, &propsSize,
+                   props.writeEndMark, &g_ProgressCallback, &SzAllocForLzma, &SzAllocForLzma);
     assert(res == SZ_OK && propsSize == LZMA_PROPS_SIZE); // NOLINT
     return destLen + propsSize;
     // outBuf.resize(propsSize + destLen);
@@ -155,40 +169,50 @@ int Compress2(unsigned char* outBuf, const unsigned char* inBuf, SizeT inBufsize
 
 int main(int argc, char* argv[])
 {
-    char* opt = argv[1];
-    char* infilename = argv[2];
-    char* outfilename = argv[3];
-    if ((argc < 3) || (strcmp(opt, optDeflate) && strcmp(opt, optCompress))) {
-        cout << "Missing argument(s).\r\nUsage: " << argv[0] << " [c d] infile outfile" << endl;
-        return -1;
+    if (argc < 2) {
+        cout << "Missing argument(s).\nUsage: " << *argv << " [c d] infile outfile" << endl;
+        return 0;
     }
+    const char* opt = argv[1];
+    const char* optDeflate = "d";
+    const char* optCompress = "c";
+
+    if ((argc < 4) || (strcmp(opt, optDeflate) && strcmp(opt, optCompress))) {
+        cout << "Wrong arguments.\nUsage: " << *argv << " [c d] infile outfile" << endl;
+        return 0;
+    }
+    const char* infilename = argv[2];
+    const char* outfilename = argv[3];
+
     unsigned char* outbuf = NULL;
     unsigned char* inbuf = NULL;
+    fstream in, out;
 
-    fstream a, b;
-
-    a.open(infilename, ios::in | ios::binary | ios::ate);
-    if (!a.good()) {
+    in.open(infilename, ios::in | ios::binary | ios::ate);
+    if (!in.good()) {
         cout << "Error opening file " << infilename << endl;
-        a.close();
+        in.close();
         return -1;
     }
-    a.seekg(0, ios::end);
-    streampos flen = a.tellg();
+
+    in.seekg(0, ios::end);
+    streampos flen = in.tellg();
     assert(flen != -1); // NOLINT
 
     SizeT buf_len = static_cast<SizeT>(flen);
     inbuf = new unsigned char[buf_len];
-    a.seekg(0, ios::beg);
-    a.read((char*)inbuf, flen);
-    if (a.bad()) {
+    in.seekg(0, ios::beg);
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    in.read(reinterpret_cast<char*>(inbuf), flen);
+    if (in.bad()) {
+        delete[] inbuf;
         cout << "Error reading file " << infilename << endl;
-        a.close();
+        in.close();
         return -1;
-    } else {
-        // printf("Read file with %ld bytes.\r\n", flen);
     }
-    a.close();
+
+    // printf("Read file with %ld bytes.\r\n", flen);
+    in.close();
 
     SizeT oflen = 0;
 
@@ -199,14 +223,19 @@ int main(int argc, char* argv[])
     } else if (!strcmp(opt, optDeflate)) {
         oflen = buf_len * 10;
         outbuf = new unsigned char[oflen];
-        // printf("Deflating...\r\n");
-        int res = LzmaUncompress(&outbuf[0], &oflen, &inbuf[LZMA_PROPS_SIZE], &buf_len, &inbuf[0],
-                                 LZMA_PROPS_SIZE);
+
+#ifdef USE_UNUSED_FUNCTION
+        printf("Deflating...\n");
+        oflen = UncompressInc(outbuf, oflen, inbuf, buf_len);
+        printf("\nDone\n");
+#else
+        int res =
+            LzmaUncompress(outbuf, &oflen, &inbuf[LZMA_PROPS_SIZE], &buf_len, inbuf, LZMA_PROPS_SIZE);
         assert(res == SZ_OK); // NOLINT
+#endif
     }
 
 #ifdef USE_LIBTOMCRYPT
-    printf("\r\nDone.\r\n");
     printf("Calculating sha384sums...\r\n");
     unsigned char hash_buffer[48];
 
@@ -228,9 +257,10 @@ int main(int argc, char* argv[])
     printf("\r\nWriting output file %s...\r\n", outfilename);
 #endif
 
-    b.open(outfilename, ios::out | ios::binary | ios::trunc);
-    b.write((char*)outbuf, oflen); // NOLINT
-    b.close();
+    out.open(outfilename, ios::out | ios::binary | ios::trunc);
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    out.write(reinterpret_cast<char*>(outbuf), static_cast<streamsize>(oflen));
+    out.close();
     cout << "Done." << endl;
     cout << "Input size:  " << buf_len << endl;
     cout << "Output size: " << oflen << endl;
@@ -239,28 +269,28 @@ int main(int argc, char* argv[])
     delete[] inbuf;
     delete[] outbuf;
 
-    /* ENTPACKEN:
-    unsigned int srcLen = oflen;
+    /*** ENTPACKEN:
+     * unsigned int srcLen = oflen;
+     * unsigned int dstLen = outbufsize;
+     * srcLen -= LZMA_PROPS_SIZE;
 
-    unsigned int dstLen = outbufsize;
-    srcLen -= LZMA_PROPS_SIZE;
+     * time_t start = time(0);
+     * int res = LzmaUncompress(
+     *     &outbuf[0], &dstLen,
+     *     &inbuf[LZMA_PROPS_SIZE], &srcLen,
+     *     &inbuf[0], LZMA_PROPS_SIZE
+     * );
+     * time_t end = time(0);
 
+     * cout << "Entpacken: " << end-start << " s" << endl;
+     * cout << "Err: " << res << ", len: " <<  dstLen/1024 << endl;
+     * cout << "Val: " << std::hex << (uint32_t)outbuf[0] << endl;
 
-    start = time(0);
-    int res = LzmaUncompress(
-    &outbuf[0], &dstLen,
-    &inbuf[LZMA_PROPS_SIZE], &srcLen,
-    &inbuf[0], LZMA_PROPS_SIZE);
-    end = time(0);
+     * fstream of;
+     * of.open("rio.elf_dec",ios::out|ios::binary|ios::trunc );
+     * of.write((char*)outbuf, dstLen);
+     * of.close();
+     ***/
 
-
-    cout << "Entpacken: " << end-start << " s" << endl;
-    cout << "Err: " << res << ", len: " <<  dstLen/1024 << endl;
-    cout << "Val: " << std::hex << (uint32_t)outbuf[0] << endl;
-
-    of.open("rio.elf_dec",ios::out|ios::binary|ios::trunc );
-    of.write((char*)outbuf, dstLen);
-    of.close();
-    */
     return 0;
 }
