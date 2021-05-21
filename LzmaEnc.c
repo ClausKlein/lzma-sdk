@@ -11,8 +11,8 @@
 #endif
 
 #include "LzmaEnc.h"
-
 #include "LzFind.h"
+
 #ifndef _7ZIP_ST
 #include "LzFindMt.h"
 #endif
@@ -426,7 +426,7 @@ SRes LzmaEnc_SetProps(CLzmaEncHandle pp, const CLzmaEncProps *props2)
 
   p->matchFinderBase.cutValue = props.mc;
 
-  p->writeEndMark = props.writeEndMark;
+  p->writeEndMark = props.writeEndMark == 1;
 
   #ifndef _7ZIP_ST
   /*
@@ -524,7 +524,7 @@ static void MY_FAST_CALL RangeEnc_ShiftLow(CRangeEnc *p)
     p->cache = (Byte)((UInt32)p->low >> 24);
   }
   p->cacheSize++;
-  p->low = (UInt32)p->low << 8;
+  p->low = (UInt32)p->low << 8; // Warning	C6297 Arithmetic overflow : 32 - bit value is shifted, then cast to 64 - bit value.Results might not be an expected value.
 }
 
 static void RangeEnc_FlushData(CRangeEnc *p)
@@ -1897,11 +1897,12 @@ static SRes LzmaEnc_CodeOneBlock(CLzmaEnc *p, Bool useLimits, UInt32 maxPackSize
 static SRes LzmaEnc_Alloc(CLzmaEnc *p, UInt32 keepWindowSize, ISzAlloc *alloc, ISzAlloc *allocBig)
 {
   UInt32 beforeSize = kNumOpts;
-  Bool btMode;
   if (!RangeEnc_Alloc(&p->rc, alloc))
     return SZ_ERROR_MEM;
-  btMode = (p->matchFinderBase.btMode != 0);
+
   #ifndef _7ZIP_ST
+  Bool btMode; // clang-tidy warning: Value stored to 'btMode' is never read! CK
+  btMode = (p->matchFinderBase.btMode != 0);
   p->mtMode = (p->multiThread && !p->fastMode && btMode);
   #endif
 
@@ -2078,7 +2079,7 @@ void LzmaEnc_Finish(CLzmaEncHandle pp)
   if (p->mtMode)
     MatchFinderMt_ReleaseStream(&p->matchFinderMt);
   #else
-  pp = pp;
+  (void)pp;
   #endif
 }
 
@@ -2155,8 +2156,8 @@ static SRes LzmaEnc_Encode2(CLzmaEnc *p, ICompressProgress *progress)
 {
   SRes res = SZ_OK;
 
-  #ifndef _7ZIP_ST
-  Byte allocaDummy[0x300];
+  #if 0 && !defined _7ZIP_ST
+  Byte allocaDummy[0x300];	// Warning: unused-but-set-variable! CK
   int i = 0;
   for (i = 0; i < 16; i++)
     allocaDummy[i] = (Byte)i;
