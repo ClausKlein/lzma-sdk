@@ -524,7 +524,7 @@ static void MY_FAST_CALL RangeEnc_ShiftLow(CRangeEnc *p)
     p->cache = (Byte)((UInt32)p->low >> 24);
   }
   p->cacheSize++;
-  p->low = (UInt32)p->low << 8;
+  p->low = (UInt32)p->low << 8; // Warning	C6297 Arithmetic overflow : 32 - bit value is shifted, then cast to 64 - bit value.Results might not be an expected value.
 }
 
 static void RangeEnc_FlushData(CRangeEnc *p)

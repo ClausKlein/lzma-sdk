@@ -102,7 +102,7 @@ target_compile_definitions(lzma PUBLIC _7ZIP_ST)
 enable_testing()
 add_test(NAME test_compress COMMAND lzmc c ${PROJECT_SOURCE_DIR}/README.rst README.lzmc)
 add_test(NAME test_decompress COMMAND lzmc d README.lzmc README.rst)
-add_test(NAME test_check COMMAND diff ${PROJECT_SOURCE_DIR}/README.rst README.rst)
+add_test(NAME test_check COMMAND cmake -E compare_files ${PROJECT_SOURCE_DIR}/README.rst README.rst)
 add_test(NAME test_stdout COMMAND lzmc d README.lzmc)
 add_test(NAME test_help COMMAND lzmc)
 
